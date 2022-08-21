@@ -1,3 +1,4 @@
+
 PROG
 var n, x, y;
 PROC putCB (c, b)
@@ -29,4 +30,4 @@ putCB (2 ,1)
 
 }
 
-GORP
+GORP 
