@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 """ This program is a simple yes/no parser.
 The program should read a text file that contains a program for the robot, and
 verify whether the syntax is correct.
@@ -5,6 +6,8 @@ You must verify that used function names and variable names have been previously
 defined or in the case of functions, that they are the function’s arguments. You must
 allow recursion.
 Spaces and tabulators are separators and should be ignored (outside of instructions)."""
+
+import re
 
 def main():
     greatbool = False
@@ -26,15 +29,14 @@ def parse(code):
     brackets = code.count("{") == code.count("}")
 
     if parenthesis and brackets:
-        code = whitecode(code)
-        print(code)
-        """        for line in code:
-            if line[:3] == "VAR":
-                greatbool = checkVariables(line, greatbool)
-            elif line[:4] == "PROC":
-                greatbool = checkProcedure(line, greatbool)
-            else:
-                greatbool = False """
+        # code = whitecode(code)
+        code = code.splitlines()
+        for line in code:
+            name_pattern = r'\w+(\w\d)*'
+            var_pattern = re.compile(rf'^\s*(var|VAR)(\s*{name_pattern},)*\s*{name_pattern};$')
+            is_match = re.match(var_pattern, line)
+            if is_match is not None:
+                print(is_match.group(0))
 
     """     greatbool = True
     declarPROC = False
