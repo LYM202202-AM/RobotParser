@@ -9,6 +9,8 @@ Spaces and tabulators are separators and should be ignored (outside of instructi
 
 import re
 
+name_pattern = r'\w+(\w\d)*'
+
 def main():
     greatbool = False
     code = open("Prueba.txt", "r")
@@ -32,11 +34,11 @@ def parse(code):
         # code = whitecode(code)
         code = code.splitlines()
         for line in code:
-            name_pattern = r'\w+(\w\d)*'
-            var_pattern = re.compile(rf'^\s*(var|VAR)(\s*{name_pattern},)*\s*{name_pattern};$')
-            is_match = re.match(var_pattern, line)
-            if is_match is not None:
-                print(is_match.group(0))
+            variables = declareVariables(line)
+            if variables is not None:
+                print(variables)
+
+                
 
     """     greatbool = True
     declarPROC = False
@@ -79,14 +81,16 @@ def whitecode(code):
     code = code.split(";")
     return code
 
-def checkVariables(line, greatbool):
+def declareVariables(line):
     # Revisa las declaraciones de variables
-    line = line[3:]
-    variables = line.split(",")
-    if len(variables) < 0:
-        greatbool = False
-
-    return greatbool
+    var_pattern = re.compile(rf'^\s*(var|VAR)(\s*{name_pattern},)*\s*{name_pattern};$')
+    is_match = re.match(var_pattern, line)
+    if is_match is not None:
+        line = line.strip('var ')
+        line = line.strip('VAR ')
+        line = line.strip(';')
+        lista_variables = line.split(', ')
+        return lista_variables
 
 def checkProcedure(line, greatbool):
     # Revisa si la definición de un Procedimiento es válida
