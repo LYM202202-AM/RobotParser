@@ -1,0 +1,8 @@
+
+PROG
+var n, x, y;
+
+
+
+
+GORP
