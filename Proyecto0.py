@@ -9,7 +9,7 @@ Spaces and tabulators are separators and should be ignored (outside of instructi
 
 import re
 
-name_pattern = r'\w+(\w\d)*'
+name_pattern = r'\w+[\w\d]*'
 
 def main():
     greatbool = False
@@ -38,37 +38,7 @@ def parse(code):
             if variables is not None:
                 print(variables)
 
-                
-
-    """     greatbool = True
-    declarPROC = False
-
-    for line in code:
-        if greatbool:
-            if line[:3] == "var":
-                greatbool = checkVariables(line, greatbool)
-            elif line[:4] == "PROC":
-                greatbool = checkProcedure(line, greatbool)
-                declarPROC = greatbool
-            elif declarPROC and line != "while":
-                commandslist = ["walk", "jump", "jumpTo", "veer", "look", "drop", "grab", "get", "free", "pop", "walk"]
-                for command in commandslist:
-                    if command in line:
-                        boolx = True
-                        line = line.replace(command, "")
-                        if not "(" in line or not ")" in line:
-                            boolx = False
-                        else:
-                            whitelist = set('abcdefghijklmnopqrstuvwxyz/-,;ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
-                            line = ''.join(filter(whitelist.__contains__, line))
-                            line = line. split(";")
-                            print(line)
-                            # for paramenter in line:
-                                # if paramenter ==
-
-            # if counter != 0:
-                #     line[counter:]"""
-
+            checkProcedure(line)
 
 
 def whitecode(code):
@@ -92,25 +62,12 @@ def declareVariables(line):
         lista_variables = line.split(', ')
         return lista_variables
 
-def checkProcedure(line, greatbool):
+def checkProcedure(line):
     # Revisa si la definición de un Procedimiento es válida
-
-    line = line[4:]
-    procname = ""
-    boolvalid = True
-    if not "(" in line and not ")" in line:
-        boolvalid = False
-
-    if boolvalid:
-        for letter in line:
-            if letter != "(":
-                procname += letter
-
-    if len(procname) < 0 or not boolvalid or not line[-1:] == "{":
-        greatbool = False
-
-    return greatbool
-
+    proc_pattern = re.compile(rf'^\s*(PROC|proc)\s*{name_pattern}\s*\((({name_pattern},)*\s*{name_pattern})\)|\s*\)$')
+    is_match = re.match(proc_pattern, line)
+    if is_match is not None:
+        print(is_match)
 
 if __name__ == '__main__':
     main()
