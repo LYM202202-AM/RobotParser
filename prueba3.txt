@@ -1,0 +1,5 @@
+{
+    drop(c);
+    free (b);
+    walk(n) 
+}
