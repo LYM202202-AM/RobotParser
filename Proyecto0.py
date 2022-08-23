@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 """ This program is a simple yes/no parser.
 The program should read a text file that contains a program for the robot, and
 verify whether the syntax is correct.
@@ -7,7 +6,7 @@ defined or in the case of functions, that they are the function’s arguments. Y
 allow recursion.
 Spaces and tabulators are separators and should be ignored (outside of instructions)."""
 
-from operator import is_
+from operator import is_not
 import re
 
 name_pattern = r'\w+[\w\d]*'
@@ -84,24 +83,30 @@ def checkProcedure(line):
             parameters = parameters.split(', ')
         else:
             parameters = []
-    return bool(is_procedure), parameters
+    return (bool(is_procedure), parameters)
 
 def checkIns(line):
     pass
 
 def checkCommand(line, parameters, variables):
     commandslist = ["walk", "jump", "drop", "grab", "get", "free", "pop"]
-    commandslist2 = ["jumpTo"]
+    commandslist2 = ["jumpTo", "walk"]
 
     commands = '|'.join(commandslist)
+    commands2 = '|'.join(commandslist2)
     posibles = variables.copy()
     posibles.extend(parameters)
     posibles_parameters = '|'.join(posibles)
 
 
     command_pattern = re.compile(rf'^\s*({commands})\s*\(({posibles_parameters})\s*\);$')
+    command_pattern2 = re.compile(rf'^\s*({commands2})\s*\(({posibles_parameters})\s*,\s*({posibles_parameters})\s*\);$')
 
     is_match = re.match(command_pattern, line)
+    is_match2 = re.match(command_pattern2, line)
+
+    if is_match2 is not None:
+        print(is_match2.group(0))
 
     if is_match is not None:
         print(is_match.group(0))
@@ -112,3 +117,7 @@ def checkAssignment(line):
 
 if __name__ == '__main__':
     main()
+
+
+
+["isfacing", "isValid", "canWalk, "not"]
