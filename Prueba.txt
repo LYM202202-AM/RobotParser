@@ -41,6 +41,10 @@ PROC goWest ()
 {
 
     if ( canWalk (west ,1)) {walk(west ,1)} fi
+                while(isValid(walk, n))do{grab(10)}od
+    repeatTimes 20 {grab(10)} per
+    repeatTimes x {grab(10)} per
+    repeatTimes a {grab(10)} per
 
 }
 CROP

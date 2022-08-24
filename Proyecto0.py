@@ -162,9 +162,22 @@ def checkCondition(line, parameters, variables):
 
     if_pattern = rf'^\s*if\s*\(({global_condition_pattern})\)\s*\[\s*{global_command_pattern}\s*\]\s*(else\s*\[{global_command_pattern}\])?\s*fi\s*'
 
-    is_match = re.search(if_pattern, line)
+    while_pattern = rf'^\s*while\s*\(({global_condition_pattern})\)\s*do\s*\[\s*{global_command_pattern}\s*\]\s*od\s*'
+
+    repeat_pattern = rf'^\s*repeatTimes\s*(({posibles_parameters})|\d+)\s*\[\s*{global_command_pattern}\s*\]\s*per\s*'
+
+    is_match = re.match(if_pattern, line)
     if is_match is not None:
         print(is_match.group(0))
+
+    is_while = re.match(while_pattern, line)
+    if is_while is not None:
+        print(is_while.group(0))
+    
+    is_repeat = re.match(repeat_pattern, line)
+    if is_repeat is not None:
+        print(is_repeat.group(0))
+
 if __name__ == '__main__':
     main()
 
