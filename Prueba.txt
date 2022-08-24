@@ -5,8 +5,15 @@ PROC putCB (c, b)
 {
     drop(c);
     free (b);
-    walk(n)
+    walk(n);
+    drop(  12);
+    walk     (  03      )                 ;
+    jumpTo( n,2);
+    jumpTo(2,c);
+    jumpTo ( 1  ,   0213         )                 ;
+    jumpTo(a    ,12);
 }
+CROP
 PROC goNorth ()
 {
 
@@ -19,10 +26,10 @@ PROC goWest ()
     if ( canWalk (west ,1)) { walk(west ,1)} fi
 
 }
-
+CROP
 {
 go (3 ,3);
-n=6;
+n:=6;
 putCB (2 ,1)
 
 

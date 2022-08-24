@@ -90,17 +90,16 @@ def checkIns(line):
 
 def checkCommand(line, parameters, variables):
     commandslist = ["walk", "jump", "drop", "grab", "get", "free", "pop"]
-    commandslist2 = ["jumpTo", "walk"]
+
 
     commands = '|'.join(commandslist)
-    commands2 = '|'.join(commandslist2)
     posibles = variables.copy()
     posibles.extend(parameters)
     posibles_parameters = '|'.join(posibles)
 
 
-    command_pattern = re.compile(rf'^\s*({commands})\s*\(({posibles_parameters})\s*\);$')
-    command_pattern2 = re.compile(rf'^\s*({commands2})\s*\(({posibles_parameters})\s*,\s*({posibles_parameters})\s*\);$')
+    command_pattern = re.compile(rf'^\s*({commands})\s*\(\s*(({posibles_parameters})|\d+)\s*\)\s*;$')
+    command_pattern2 = re.compile(rf'^\s*jumpTo\s*\(\s*(({posibles_parameters})|\d+)\s*,\s*(({posibles_parameters})|\d+)\s*\)\s*;$')
 
     is_match = re.match(command_pattern, line)
     is_match2 = re.match(command_pattern2, line)
@@ -120,4 +119,4 @@ if __name__ == '__main__':
 
 
 
-["isfacing", "isValid", "canWalk, "not"]
+# ["isfacing", "isValid", "canWalk, "not"]
