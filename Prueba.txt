@@ -1,17 +1,26 @@
 
 PROG
-var n, x, y;
+VAR n, x, y;
 PROC putCB (c, b)
 {
     drop(c);
     free (b);
     walk(n);
     drop(  12);
-    walk     (  03      )                 ;
+    walk     (  03      )                 ;                         
     jumpTo( n,2);
     jumpTo(2,c);
     jumpTo ( 1  ,   0213         )                 ;
     jumpTo(a    ,12);
+    veer (    left  )    ;
+look        (       north   )   ;               
+ walk  (   left    ,     102123    )      ;                 
+ walk  (   left         102123    )      ;                 
+ walk  (   up    ,     a    )      ;                 
+ walk  (   south    ,     a    )      ;                 
+ walk  (   south    ,     c    )      ;                 
+ walk  (   north    ,     north    )      ;                 
+    walk(north, y);
 }
 CROP
 PROC goNorth ()

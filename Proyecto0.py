@@ -6,11 +6,10 @@ defined or in the case of functions, that they are the function’s arguments. Y
 allow recursion.
 Spaces and tabulators are separators and should be ignored (outside of instructions)."""
 
-from operator import is_not
 import re
 
 name_pattern = r'\w+[\w\d]*'
-var_pattern = rf'^\s*(var|VAR)(\s*{name_pattern},)*\s*{name_pattern};$'
+var_pattern = rf'^\s*VAR(\s*{name_pattern},)*\s*{name_pattern};$'
 # exp = rf'^(PROG|prog)[\s\n]*{var_pattern}\n*'
 
 def main():
@@ -53,7 +52,7 @@ def parse(code):
 
         if in_procedure:
             checkCommand(line, parameters, variables)
-            # checkAssignment(line)
+        checkAssignment(line)
 
 def declareVariables(line):
     # Revisa las declaraciones de variables
@@ -61,7 +60,6 @@ def declareVariables(line):
     lista_variables = None
 
     if is_match is not None:
-        line = line.strip('var ')
         line = line.strip('VAR ')
         line = line.strip(';')
         lista_variables = line.split(', ')
@@ -70,7 +68,7 @@ def declareVariables(line):
 
 def checkProcedure(line):
     # Revisa si la definición de un Procedimiento es válida
-    proc_pattern = re.compile(rf'^\s*(PROC|proc)\s*{name_pattern}\s*\(((({name_pattern},)*\s*{name_pattern}\))|\s*\))$')
+    proc_pattern = re.compile(rf'^\s*PROC\s*{name_pattern}\s*\(((({name_pattern},)*\s*{name_pattern}\))|\s*\))$')
     parameter_pattern = re.compile(rf'\(({name_pattern},)*\s*{name_pattern}\)')
     parameters = []
 
@@ -90,29 +88,53 @@ def checkIns(line):
 
 def checkCommand(line, parameters, variables):
     commandslist = ["walk", "jump", "drop", "grab", "get", "free", "pop"]
+    orientationList = ["north", "south", "east", "west"]
+    directionsList = ["around", "left", "right"]
+    walkList = orientationList.copy()
+    walkList.extend(["front", "back", "left", "right"])
 
 
     commands = '|'.join(commandslist)
     posibles = variables.copy()
     posibles.extend(parameters)
     posibles_parameters = '|'.join(posibles)
+    posibles_orientation = '|'.join(orientationList)
+    posibles_directions = '|'.join(directionsList)
+    posibles_walks = '|'.join(walkList)
 
 
-    command_pattern = re.compile(rf'^\s*({commands})\s*\(\s*(({posibles_parameters})|\d+)\s*\)\s*;$')
-    command_pattern2 = re.compile(rf'^\s*jumpTo\s*\(\s*(({posibles_parameters})|\d+)\s*,\s*(({posibles_parameters})|\d+)\s*\)\s*;$')
+    command_pattern = re.compile(rf'^\s*({commands})\s*\(\s*(({posibles_parameters})|\d+)\s*\)\s*;\s*$')
+    jumpTo_pattern = re.compile(rf'^\s*jumpTo\s*\(\s*(({posibles_parameters})|\d+)\s*,\s*(({posibles_parameters})|\d+)\s*\)\s*;\s*$')
+    veer_pattern = re.compile(rf'^\s*veer\s*\(\s*({posibles_directions})\s*\)\s*;\s*$')
+    look_pattern = re.compile(rf'^\s*look\s*\(\s*({posibles_orientation})\s*\)\s*;\s*$')
+    walk_pattern = re.compile(rf'^\s*walk\s*\(\s*({posibles_walks})\s*,\s*(({posibles_parameters})|\d+)\s*\)\s*;\s*$')
 
-    is_match = re.match(command_pattern, line)
-    is_match2 = re.match(command_pattern2, line)
+    is_command = re.match(command_pattern, line)
+    is_jumpTo = re.match(jumpTo_pattern, line)
+    is_veer = re.match(veer_pattern, line)
+    is_look = re.match(look_pattern, line)
+    is_walk = re.match(walk_pattern, line)
 
-    if is_match2 is not None:
-        print(is_match2.group(0))
+    if is_command is not None:
+        print(is_command.group(0))
 
-    if is_match is not None:
-        print(is_match.group(0))
+    if is_jumpTo is not None:
+        print(is_jumpTo.group(0))
 
+    if is_veer is not None:
+        print(is_veer.group(0))
+
+    if is_look is not None:
+        print(is_look.group(0))
+
+    if is_walk is not None:
+        print(is_walk.group(0))
 
 def checkAssignment(line):
-    pass
+    assign_pattern = re.compile(rf'^\s*({name_pattern})\s*:=\s*\d+\s*;$')
+    is_match = re.match(assign_pattern, line)
+    if is_match is not None:
+        print(is_match.group(0))
 
 if __name__ == '__main__':
     main()
