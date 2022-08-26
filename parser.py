@@ -20,9 +20,9 @@ start_prog = r'^[\s\n]*PROG[\s\n]*'
 end_prog = r'GORP[\s\n]*$'
 
 name_pattern = r'\w+[\w\d]*'
-var_pattern = rf'^[\s\n]*VAR([\s\n]*{name_pattern},)*[\s\n]*{name_pattern};'
+var_pattern = rf'^[\s\n]*VAR([\s\n]*{name_pattern}[\s\n]*,)*[\s\n]*{name_pattern}[\s\n]*;'
 
-proc_pattern = rf'[\s\n]*PROC[\s\n]*({name_pattern})[\s\n]*\(([\s\n]*({name_pattern},[\s\n]*)*({name_pattern}))?[\s\n]*\)[\s\n]*'
+proc_pattern = rf'[\s\n]*PROC[\s\n]*({name_pattern})[\s\n]*\(([\s\n]*({name_pattern}[\s\n]*,[\s\n]*)*({name_pattern}))?[\s\n]*\)[\s\n]*'
 
 
 
@@ -32,15 +32,31 @@ def readFile(fileName):
     file.close()
     code = code.replace('{', '[')
     code = code.replace('}', ']')
+    code = code.replace('\n', ' ')
     return code
 
-def createBlockScope(parameters, variables, procedures, proc):
+def createBlockScope(parameters, variables, procedures, n_parameters , proc):
     posibles = variables.copy()
     callable_procedures = procedures.copy()
     callable_procedures.remove(proc)
     posibles.extend(parameters)
-    posibles.extend(callable_procedures)
     posibles_parameters = '|'.join(posibles)
+    rules = []
+
+    for k, v in n_parameters.items():
+        for p in v:
+            if p in callable_procedures:
+                if k == 0:
+                    exp = rf'[\s\n]*{p}[\s\n]*\([\s\n]*\)[\s\n]*'
+                elif k == 1:
+                    exp = rf'[\s\n]*{p}[\s\n]*\([\s\n]*({posibles_parameters}|\d+)[\s\n]*\)[\s\n]*'
+                elif k > 1:
+                    k_minus = k - 1
+                    repeticiones = f'(({posibles_parameters}|\d+)\s*,\s*)'*k_minus
+                    exp = rf'[\s\n]*{p}[\s\n]*\(\s*{repeticiones}\s*({posibles_parameters}|\d+)\s*\)[\s\n]*'
+                rules.append(exp)
+
+    posibles_procedures = '|'.join(rules)
 
 
     validList = ["walk", "jump", "grab", "pop" "pick", "free", "drop"]
@@ -67,7 +83,7 @@ def createBlockScope(parameters, variables, procedures, proc):
     walk_pattern = rf'\s*walk\s*\(\s*({posibles_walks})\s*,\s*(({posibles_parameters})|\d+)\s*\)\s*'
     assign_pattern = rf'\s*({posibles_parameters})\s*:=\s*\d+\s*'
 
-    global_command_pattern = rf'({command_pattern}|{jumpTo_pattern}|{veer_pattern}|{look_pattern}|{walk_pattern}|{assign_pattern})'
+    global_command_pattern = rf'({command_pattern}|{jumpTo_pattern}|{veer_pattern}|{look_pattern}|{walk_pattern}|{assign_pattern}|({posibles_procedures}))'
 
     terminal_block_pattern = rf'[\s\n]*({global_command_pattern}%)*({global_command_pattern})?[\s\n]*'
 
@@ -78,7 +94,7 @@ def createBlockScope(parameters, variables, procedures, proc):
     repeat_pattern = rf'\s*repeatTimes\s*(({posibles_parameters})|\d+)\s*\[\s*{terminal_block_pattern}\s*\]\s*per\s*'
 
     control_structure_pattern = rf'({if_pattern}|{while_pattern}|{repeat_pattern})'
-    print(terminal_block_pattern)
+    # print(terminal_block_pattern)
 
     return global_command_pattern, control_structure_pattern
 
@@ -98,7 +114,20 @@ def findVariables(code):
 def findProcedures(code):
     procedures = re.findall(proc_pattern, code)
     procedures = [p[0] for p in procedures]
-    return procedures
+    parameters = {}
+    for p in procedures:
+        proc = re.search(rf'[\s\n]*PROC[\n\s]*{p}', code)
+        s = proc.span()
+        temp_code = code[s[0]:]
+        just_procedure = re.match(rf'^{proc_pattern}', temp_code)
+        just_procedure = just_procedure.group()
+        info = re.findall(name_pattern, just_procedure)
+        parameters_act = info[2:]
+        if len(parameters_act) in parameters:
+            parameters[len(parameters_act)].append(p)
+        else:
+            parameters[len(parameters_act)] = [p]
+    return procedures, parameters
 
 
 def checkProgram(code):
@@ -148,7 +177,10 @@ def checkNonTerminalBlock(code, command_pattern, control_structure_pattern):
         s = non_terminal_block.span()[1]
         code = code[s:]
         end = re.search(rf'\][\s\n]*CORP', code)
-        e = end.span()[0]
+        if end:
+            e = end.span()[0]
+        else:
+            return False
         temp_block = code[:e]
         temp_block = re.sub(r'[\s\n]*', '', temp_block)
         inicios = []
@@ -165,11 +197,11 @@ def checkNonTerminalBlock(code, command_pattern, control_structure_pattern):
             if pos == -1:
                 break
             finales.append(pos)
-        print(inicios, finales)
+        # print(inicios, finales)
 
         for i, j in zip(inicios, finales):
             temp_block = temp_block [:i] + temp_block[i:j].replace(';', '%') + temp_block[j:]
-        print(temp_block)
+        # print(temp_block)
 
         instructions = temp_block.split(';')
         for ins in instructions:
@@ -180,8 +212,15 @@ def checkNonTerminalBlock(code, command_pattern, control_structure_pattern):
                     print('Error: invalid instruction ' + ins)
                     return False
                 print('control structure ' + ins)
-            print('command ' + ins)
-        return code[e+1:]
+            else:
+                print('command ' + ins)
+        
+        end_pattern = rf'^[\s\n]*\][\s\n]*CORP'
+        end = re.match(end_pattern, code[e:])
+        if end:
+            return code[e+end.span()[1]:]
+
+        return False
 
 
 

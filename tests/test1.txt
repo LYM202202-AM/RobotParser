@@ -1,8 +1,41 @@
-
 PROG
-var n, x, y;
+VAR n , x , y ;
+PROC putCB (c , b)
+{
+drop (c) ;
+free (b) ;
+walk (n);
+goNorth(c)
+}
+CORP
+
+ PROC goNorth (a)
+ {
+
+ while ( canWalk ( north ,1) ) do { walk ( north ,1) } od;
+ putCB(1,x);
+goWest(1,2,3,4)
+ }
+ CORP
+
+
+ PROC goWest (a,b,e,l)
+ {
+
+ if ( canWalk ( west ,1) ) { walk ( west ,1) } fi
+
+ }
+ CORP
+
+
+ {
+ go (3 ,3) ;
+ n =6;
+ putCB (2 ,1)
 
 
 
 
-GORP
+ }
+
+ GORP

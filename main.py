@@ -5,33 +5,41 @@ variables = []
 procedures = []
 
 def main():
-    code = parser.readFile("tests/test.txt")
+    code = parser.readFile("tests/test1.txt")
     code = parser.checkProgram(code)
     if code:
         has_variables = parser.findVariables(code)
         if has_variables:
             code, variables = has_variables
+            print("Variables: ", variables)
         else:
             print("No variables")
 
         has_procedures = parser.findProcedures(code)
         if has_procedures:
-            print("Procedures: ", has_procedures)
-            procedures = has_procedures
+            procedures, n_parameters = has_procedures
+            print("Procedures: ", procedures)
+            print("Number of parameters: ", n_parameters)
+            print()
+            # procedures = has_procedures
             for proc_act in procedures:
+                # print("Procedure: ", proc_act)
                 has_procedure = parser.checkProcedure(code)
                 if has_procedure:
                     code, proc, parameters = has_procedure
                     if proc == proc_act:
-                        command_pattern, control_structure_pattern = parser.createBlockScope(parameters, variables, procedures, proc)
+                        command_pattern, control_structure_pattern = parser.createBlockScope(parameters, variables, procedures, n_parameters, proc)
                         has_block = parser.checkNonTerminalBlock(code, command_pattern, control_structure_pattern)
                         if has_block:
                             code = has_block
                             print('Procedure: ', proc)
                             print('Parameters: ', parameters)
-                            print('Variables: ', variables)
+                            # print('Variables: ', variables)
+                            # print(code)
+                            print('\n')
                         else:
                             print('No valid procedure ' + proc)
+            # print(code)
     else:
         print("No program")
 

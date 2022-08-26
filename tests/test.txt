@@ -40,32 +40,34 @@ CORP
 PROC goNorth ( )
 {
 
-    while (canWalk (north ,1)) do {walk(north ,1)} od
-    if (isfacing(north)) {x:=2} fi
-    if (isValid(walk, 20)) {x:=2} fi
-    if (        isValid (       walk,   n   )     ) {x:=2} fi
+    while (canWalk (north ,1)) do {walk(north ,1)} od;
+    if (isfacing(north)) {x:=2} fi;
+    if (isValid(walk, 20)) {x:=2} fi;
+    if (        isValid (       walk,   n   )     ) {x:=2} fi;
     if (        not         (        isValid (       walk,   n   )  )   ) {
         x:=2;
         y:=3
-        } fi
+        } fi;
     if (canWalk(right, 20)) {walk(12)} else {look(north)} fi
 
-}
+} CORP
 
 
 
-PROC goWest ( )
+PROC goWest ( a)
 {
 
-    if ( canWalk (west ,1)) {walk(west ,1)} fi
-                while(isValid(walk, n))do{grab(10)}od
-    repeatTimes 20 {grab(10)} per
-    repeatTimes x {grab(10)} per
+    if ( canWalk (west ,1)) {walk(west ,1)} fi;
+                while(isValid(walk, n))do{grab(10)}od;
+    repeatTimes 20 {grab(10); 
+    walk(1)
+    } per;
+    repeatTimes x {grab(10)} per;
     repeatTimes a {grab(10)} per
 
 }
 
-CROP
+CORP
 
 
 
