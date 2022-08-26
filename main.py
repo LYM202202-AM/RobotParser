@@ -1,4 +1,4 @@
-import parser
+import parsero
 
 variables = []
 procedures = []
@@ -6,10 +6,10 @@ procedures = []
 def main():
     """ Main function to execute the parser
     """
-    code = parser.readFile("tests/test.txt")
-    code = parser.checkProgram(code)
+    code = parsero.readFile("tests/test.txt")
+    code = parsero.checkProgram(code)
     if code:
-        has_variables = parser.findVariables(code)
+        has_variables = parsero.findVariables(code)
         if has_variables:
             code, variables = has_variables
             print("Variables: ", variables)
@@ -17,7 +17,7 @@ def main():
             variables = []
             print("No variables")
 
-        has_procedures = parser.findProcedures(code)
+        has_procedures = parsero.findProcedures(code)
         if has_procedures:
             procedures, n_parameters = has_procedures
             print("Procedures: ", procedures)
@@ -26,13 +26,13 @@ def main():
             # procedures = has_procedures
             for proc_act in procedures:
                 # print("Procedure: ", proc_act)
-                has_procedure = parser.checkProcedure(code)
+                has_procedure = parsero.checkProcedure(code)
                 if has_procedure:
                     code, proc, parameters = has_procedure
                     if proc == proc_act:
-                        command_pattern, control_structure_pattern = parser.createBlockScope(
+                        command_pattern, control_structure_pattern = parsero.createBlockScope(
                             parameters, variables, procedures, n_parameters, proc)
-                        has_block = parser.checkNonTerminalBlock(
+                        has_block = parsero.checkNonTerminalBlock(
                             code, command_pattern, control_structure_pattern)
                         if has_block:
                             code = has_block
@@ -43,12 +43,12 @@ def main():
                             print('\n')
                         else:
                             print('No valid procedure ' + proc)
-            instructions_block = parser.createBlockScope(
+            instructions_block = parsero.createBlockScope(
                 [], variables, procedures, n_parameters, [])
             # print(code)
             command_pattern, control_structure_pattern = instructions_block
 
-            final = parser.checkInstructionsBlock(code, command_pattern, control_structure_pattern)
+            final = parsero.checkInstructionsBlock(code, command_pattern, control_structure_pattern)
 
 
             if final:
