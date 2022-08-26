@@ -5,23 +5,25 @@ PROC putCB (c , b)
 drop (c) ;
 free (b) ;
 walk (1);
-goNorth(c)
+goNorth(c);
+putCB(2,3)
 }
 CORP
 
  PROC goNorth (a)
  {
 
- while ( canWalk ( north ,1) ) do { walk ( north ,1) } od;
+ while ( canWalk ( north ,1) ) do { walk ( north ,1); goNorth(2) } od;
  putCB(1,a);
 goWest( 1 , 2 , 3 , 4 )
+
  }
  CORP
 
 
  PROC goWest (a , b , e, l)
  {
-
+    goWest(1,2,3,4);
  if ( canWalk ( west ,1) ) { walk ( west ,1); goNorth(2)  } fi
 
  }

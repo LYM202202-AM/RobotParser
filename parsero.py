@@ -42,10 +42,11 @@ def readFile(fileName):
 def createBlockScope(parameters, variables, procedures, n_parameters , proc):
     posibles = variables.copy()
     callable_procedures = procedures.copy()
-    try:
-        callable_procedures.remove(proc)
-    except ValueError:
-        pass
+    # DEPRECATED CODE: NOT ALLOW RECURSIVE CALLS
+    # try:
+    #     callable_procedures.remove(proc)
+    # except ValueError:
+    #     pass
     posibles.extend(parameters)
     posibles_parameters = '|'.join(posibles)
     rules = []
