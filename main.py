@@ -5,7 +5,7 @@ variables = []
 procedures = []
 
 def main():
-    code = parser.readFile("tests/test1.txt")
+    code = parser.readFile("tests/test.txt")
     code = parser.checkProgram(code)
     if code:
         has_variables = parser.findVariables(code)

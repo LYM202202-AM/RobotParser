@@ -72,7 +72,7 @@ CORP
 
 
 {
-go (3 ,3);
+walk (north ,3);
 n:=6;
 putCB (2 ,1)
 
