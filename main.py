@@ -18,12 +18,20 @@ def main():
         if has_procedures:
             print("Procedures: ", has_procedures)
             procedures = has_procedures
-
-        # has_procedure = parser.checkProcedure(code)
-        # if has_procedure:
-        #     code, procedure, parameters = has_procedure
-        #     block_pattern = parser.createBlockScope(parameters, variables, procedure)
-        #     print(block_pattern)
+            for proc_act in procedures:
+                has_procedure = parser.checkProcedure(code)
+                if has_procedure:
+                    code, proc, parameters = has_procedure
+                    if proc == proc_act:
+                        command_pattern, control_structure_pattern = parser.createBlockScope(parameters, variables, procedures, proc)
+                        has_block = parser.checkNonTerminalBlock(code, command_pattern, control_structure_pattern)
+                        if has_block:
+                            code = has_block
+                            print('Procedure: ', proc)
+                            print('Parameters: ', parameters)
+                            print('Variables: ', variables)
+                        else:
+                            print('No valid procedure ' + proc)
     else:
         print("No program")
 

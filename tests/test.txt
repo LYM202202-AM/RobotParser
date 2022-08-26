@@ -16,19 +16,28 @@ VAR n, x, y;
     jumpTo( n,2);
     jumpTo(2,c);
     jumpTo ( 1  ,   0213         )                 ;
-    jumpTo(a    ,12);
+    jumpTo(y    ,12);
     veer (    left  )    ;
-look        (       north   )   ;               
- walk  (   left    ,     102123    )      ;                 
- walk  (   left         102123    )      ;                 
- walk  (   up    ,     a    )      ;                 
- walk  (   south    ,     a    )      ;                 
- walk  (   south    ,     c    )      ;                 
- walk  (   north    ,     north    )      ;                 
+    look        (       north   )   ;               
+    walk  (   left    ,     102123    )      ;                              
+    walk  (   south    ,     c    )      ;                             
     walk(north, y);
+    if (canWalk(right, 20)) {
+        walk(12);
+        look(north)
+        } else {look(north)} fi;
+    while (canWalk (north ,1)) do {
+        drop(c);
+        free (b);
+        walk(n);
+        drop(  12);
+        walk     (  03      )                 ;                         
+        jumpTo( n,2)
+        } od;
+    veer(left)
 }
-CROP
-PROC goNorth ()
+CORP
+PROC goNorth ( )
 {
 
     while (canWalk (north ,1)) do {walk(north ,1)} od
@@ -45,7 +54,7 @@ PROC goNorth ()
 
 
 
-PROC goWest ()
+PROC goWest ( )
 {
 
     if ( canWalk (west ,1)) {walk(west ,1)} fi
@@ -57,6 +66,9 @@ PROC goWest ()
 }
 
 CROP
+
+
+
 {
 go (3 ,3);
 n:=6;

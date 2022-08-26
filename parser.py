@@ -22,58 +22,22 @@ end_prog = r'GORP[\s\n]*$'
 name_pattern = r'\w+[\w\d]*'
 var_pattern = rf'^[\s\n]*VAR([\s\n]*{name_pattern},)*[\s\n]*{name_pattern};'
 
-proc_pattern = rf'[\s\n]*PROC[\s\n]*({name_pattern})[\s\n]*\('
-# proc_pattern = rf'[\s\n]*PROC[\s\n]*(\w+[\w\d]*)[\s\n]*\((2(3[\s\n]*(1[\w\d]*,[\s\n]*1)*(\w+[\w\d]*)3)?[\s\n]*\)2)'
+proc_pattern = rf'[\s\n]*PROC[\s\n]*({name_pattern})[\s\n]*\(([\s\n]*({name_pattern},[\s\n]*)*({name_pattern}))?[\s\n]*\)[\s\n]*'
+
+
 
 def readFile(fileName):
     file = open(fileName, 'r')
     code = file.read()
     file.close()
+    code = code.replace('{', '[')
+    code = code.replace('}', ']')
     return code
 
-def checkProgram(code):
-    start = re.match(start_prog, code)
-    end = re.search(end_prog, code)
-    if start and end:
-        s = start.span()[1]
-        e = end.span()[0]
-        return code[s:e]
-    return False
-
-def findVariables(code):
-    variables = re.match(var_pattern, code)
-    if variables:
-        s = variables.span()[1]
-        var_start = r'^[\s\n]*VAR'
-        var_str = re.match(var_start, variables.group())
-        just_variables = variables.group()[var_str.span()[1]:]
-        variables = re.findall(name_pattern, just_variables)
-        return code[s:], variables
-    return False
-
-def findProcedures(code):
-    pass
-
-def checkProcedure(code):
-    procedure = re.match(rf'^{proc_pattern}', code)
-    if procedure:
-        s = procedure.span()[1]
-        proc_start = r'^[\s\n]*PROC'
-        proc_str = re.match(proc_start, procedure.group())
-        just_procedure = procedure.group()[proc_str.span()[1]:]
-        info = re.findall(name_pattern, just_procedure)
-        procedure = info[0]
-        parameters = info[1:]
-        procedures.append(procedure)
-        return code[s:], procedure, parameters
-    return False
-
-
-
-def createBlockScope(parameters, variables, procedure):
+def createBlockScope(parameters, variables, procedures, proc):
     posibles = variables.copy()
     callable_procedures = procedures.copy()
-    callable_procedures.remove(procedure)
+    callable_procedures.remove(proc)
     posibles.extend(parameters)
     posibles.extend(callable_procedures)
     posibles_parameters = '|'.join(posibles)
@@ -105,16 +69,119 @@ def createBlockScope(parameters, variables, procedure):
 
     global_command_pattern = rf'({command_pattern}|{jumpTo_pattern}|{veer_pattern}|{look_pattern}|{walk_pattern}|{assign_pattern})'
 
-    terminal_block_pattern = rf'[\s\n]*((({global_command_pattern})([\s\n]*;[\s\n]*))*{global_command_pattern})?[\s\n]*'
+    terminal_block_pattern = rf'[\s\n]*({global_command_pattern}%)*({global_command_pattern})?[\s\n]*'
 
-    if_pattern = rf'^\s*if\s*\(({global_condition_pattern})\)\s*\[\s*{terminal_block_pattern}\s*\]\s*(else\s*\[{terminal_block_pattern}\])?\s*fi\s*'
+    if_pattern = rf'\s*if\s*\(({global_condition_pattern})\)\s*\[\s*{terminal_block_pattern}\s*\]\s*(else\s*\[{terminal_block_pattern}\])?\s*fi\s*'
 
-    while_pattern = rf'^\s*while\s*\(({global_condition_pattern})\)\s*do\s*\[\s*{terminal_block_pattern}\s*\]\s*od\s*'
+    while_pattern = rf'\s*while\s*\(({global_condition_pattern})\)\s*do\s*\[\s*{terminal_block_pattern}\s*\]\s*od\s*'
 
-    repeat_pattern = rf'^\s*repeatTimes\s*(({posibles_parameters})|\d+)\s*\[\s*{terminal_block_pattern}\s*\]\s*per\s*'
+    repeat_pattern = rf'\s*repeatTimes\s*(({posibles_parameters})|\d+)\s*\[\s*{terminal_block_pattern}\s*\]\s*per\s*'
 
     control_structure_pattern = rf'({if_pattern}|{while_pattern}|{repeat_pattern})'
+    print(terminal_block_pattern)
 
-    non_terminal_block_pattern = rf'[\s\n]*((({global_command_pattern}|{control_structure_pattern})([\s\n]*;[\s\n]*))*({global_command_pattern}|{control_structure_pattern}))?[\s\n]*'
+    return global_command_pattern, control_structure_pattern
 
-    return non_terminal_block_pattern
+
+
+def findVariables(code):
+    variables = re.match(var_pattern, code)
+    if variables:
+        s = variables.span()[1]
+        var_start = r'^[\s\n]*VAR'
+        var_str = re.match(var_start, variables.group())
+        just_variables = variables.group()[var_str.span()[1]:]
+        variables = re.findall(name_pattern, just_variables)
+        return code[s:], variables
+    return False
+
+def findProcedures(code):
+    procedures = re.findall(proc_pattern, code)
+    procedures = [p[0] for p in procedures]
+    return procedures
+
+
+def checkProgram(code):
+    start = re.match(start_prog, code)
+    end = re.search(end_prog, code)
+    if start and end:
+        s = start.span()[1]
+        e = end.span()[0]
+        return checkParenthesis(code[s:e])
+    return False
+
+def checkParenthesis(code):
+    stack = []
+    for char in code:
+        if char in ['[', '(']:
+            stack.append(char)
+        elif char in [']', ')']:
+            if not stack:
+                return False
+            current_char = stack.pop()
+            if current_char == '[' and char != ']':
+                return False
+            elif current_char == '(' and char != ')':
+                return False
+    if stack:
+        return False
+    return code
+
+def checkProcedure(code):
+    procedure = re.match(rf'^{proc_pattern}', code)
+    if procedure:
+        s = procedure.span()[1]
+        proc_start = r'^[\s\n]*PROC'
+        proc_str = re.match(proc_start, procedure.group())
+        just_procedure = procedure.group()[proc_str.span()[1]:]
+        info = re.findall(name_pattern, just_procedure)
+        procedure = info[0]
+        parameters = info[1:]
+        procedures.append(procedure)
+        return code[s:], procedure, parameters
+    return False
+
+def checkNonTerminalBlock(code, command_pattern, control_structure_pattern):
+    non_terminal_block_pattern = rf'^\[[\s\n]*'
+    non_terminal_block = re.match(non_terminal_block_pattern, code)
+    if non_terminal_block:
+        s = non_terminal_block.span()[1]
+        code = code[s:]
+        end = re.search(rf'\][\s\n]*CORP', code)
+        e = end.span()[0]
+        temp_block = code[:e]
+        temp_block = re.sub(r'[\s\n]*', '', temp_block)
+        inicios = []
+        finales = []
+        pos = -1
+        while True:
+            pos = temp_block.find('[', pos + 1)
+            if pos == -1:
+                break
+            inicios.append(pos)
+
+        while True:
+            pos = temp_block.find(']', pos + 1)
+            if pos == -1:
+                break
+            finales.append(pos)
+        print(inicios, finales)
+
+        for i, j in zip(inicios, finales):
+            temp_block = temp_block [:i] + temp_block[i:j].replace(';', '%') + temp_block[j:]
+        print(temp_block)
+
+        instructions = temp_block.split(';')
+        for ins in instructions:
+            command = re.match(rf'{command_pattern}$', ins)
+            if not command:
+                control_structure = re.match(rf'{control_structure_pattern}$', ins)
+                if not control_structure:
+                    print('Error: invalid instruction ' + ins)
+                    return False
+                print('control structure ' + ins)
+            print('command ' + ins)
+        return code[e+1:]
+
+
+
