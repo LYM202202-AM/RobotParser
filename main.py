@@ -13,6 +13,7 @@ def main():
             code, variables = has_variables
             print("Variables: ", variables)
         else:
+            variables = []
             print("No variables")
 
         has_procedures = parser.findProcedures(code)
@@ -39,7 +40,18 @@ def main():
                             print('\n')
                         else:
                             print('No valid procedure ' + proc)
+            instructions_block = parser.createBlockScope([], variables, procedures, n_parameters, [])
             # print(code)
+            command_pattern, control_structure_pattern = instructions_block
+
+            final = parser.checkInstructionsBlock(code, command_pattern, control_structure_pattern)
+
+
+            if final:
+                print("Valid program")
+            else:
+                print("Invalid program")
+
     else:
         print("No program")
 

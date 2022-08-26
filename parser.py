@@ -1,3 +1,4 @@
+from ast import pattern
 import re
 
 
@@ -38,7 +39,10 @@ def readFile(fileName):
 def createBlockScope(parameters, variables, procedures, n_parameters , proc):
     posibles = variables.copy()
     callable_procedures = procedures.copy()
-    callable_procedures.remove(proc)
+    try:
+        callable_procedures.remove(proc)
+    except ValueError:
+        pass
     posibles.extend(parameters)
     posibles_parameters = '|'.join(posibles)
     rules = []
@@ -181,6 +185,7 @@ def checkNonTerminalBlock(code, command_pattern, control_structure_pattern):
             e = end.span()[0]
         else:
             return False
+
         temp_block = code[:e]
         temp_block = re.sub(r'[\s\n]*', '', temp_block)
         inicios = []
@@ -214,7 +219,7 @@ def checkNonTerminalBlock(code, command_pattern, control_structure_pattern):
                 print('control structure ' + ins)
             else:
                 print('command ' + ins)
-        
+
         end_pattern = rf'^[\s\n]*\][\s\n]*CORP'
         end = re.match(end_pattern, code[e:])
         if end:
@@ -222,5 +227,53 @@ def checkNonTerminalBlock(code, command_pattern, control_structure_pattern):
 
         return False
 
+def checkInstructionsBlock(code, command_pattern, control_structure_pattern):
+    start = r'^[\s\n]*\[[\s\n]*'
+    end = r'[\s\n]*\][\s\n]*$'
+    s = re.match(start, code)
+    e = re.search(end, code)
+    if s and e:
+        s = s.span()[1]
+        e = e.span()[0]
+        code = code[s:e]
+        print(code)
+
+        temp_block = re.sub(r'[\s\n]*', '', code)
+        inicios = []
+        finales = []
+        pos = -1
+        while True:
+            pos = temp_block.find('[', pos + 1)
+            if pos == -1:
+                break
+            inicios.append(pos)
+
+        while True:
+            pos = temp_block.find(']', pos + 1)
+            if pos == -1:
+                break
+            finales.append(pos)
+        # print(inicios, finales)
+
+        for i, j in zip(inicios, finales):
+            temp_block = temp_block [:i] + temp_block[i:j].replace(';', '%') + temp_block[j:]
+        # print(temp_block)
+
+        instructions = temp_block.split(';')
+        for ins in instructions:
+            command = re.match(rf'{command_pattern}$', ins)
+            if not command:
+                control_structure = re.match(rf'{control_structure_pattern}$', ins)
+                if not control_structure:
+                    print('Error: invalid instruction ' + ins)
+                    return False
+                print('control structure ' + ins)
+            else:
+                print('command ' + ins)
+
+
+        if len(code[e:]) <= 0:
+            return True
+        return False
 
 

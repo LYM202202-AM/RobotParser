@@ -1,10 +1,9 @@
 PROG
-VAR n , x , y ;
 PROC putCB (c , b)
 {
 drop (c) ;
 free (b) ;
-walk (n);
+walk (1);
 goNorth(c)
 }
 CORP
@@ -13,28 +12,29 @@ CORP
  {
 
  while ( canWalk ( north ,1) ) do { walk ( north ,1) } od;
- putCB(1,x);
-goWest(1,2,3,4)
+ putCB(1,a);
+goWest( 1 , 2 , 3 , 4 )
  }
  CORP
 
 
- PROC goWest (a,b,e,l)
+ PROC goWest (a , b , e, l)
  {
 
- if ( canWalk ( west ,1) ) { walk ( west ,1) } fi
+ if ( canWalk ( west ,1) ) { walk ( west ,1); goNorth(2)  } fi
 
  }
  CORP
 
 
  {
- go (3 ,3) ;
- n =6;
- putCB (2 ,1)
+ walk (front ,3) ;
+
+ putCB (2 ,1);
 
 
-
+ if ( canWalk ( west ,1) ) { walk ( west ,1); goNorth(2) ;
+ goWest(4,3,2,1) } fi
 
  }
 
