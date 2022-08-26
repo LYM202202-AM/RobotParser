@@ -3,29 +3,33 @@ import parsero
 variables = []
 procedures = []
 
-def main():
+def main(filename):
     """ Main function to execute the parser
     """
-    code = parsero.readFile("tests/test.txt")
+    try:
+        code = parsero.readFile(filename)
+    except FileNotFoundError:
+        print("File not found")
+        return False
     code = parsero.checkProgram(code)
     if code:
         has_variables = parsero.findVariables(code)
         if has_variables:
             code, variables = has_variables
-            print("Variables: ", variables)
+            # print("Variables: ", variables)
         else:
             variables = []
-            print("No variables")
+            # print("No variables")
 
         has_procedures = parsero.findProcedures(code)
         if has_procedures:
             procedures, n_parameters = has_procedures
-            print("Procedures: ", procedures)
-            print("Number of parameters: ", n_parameters)
-            print()
+            # print("Procedures: ", procedures)
+            # print("Number of parameters: ", n_parameters)
+            # print()
             # procedures = has_procedures
             for proc_act in procedures:
-                # print("Procedure: ", proc_act)
+                # # print("Procedure: ", proc_act)
                 has_procedure = parsero.checkProcedure(code)
                 if has_procedure:
                     code, proc, parameters = has_procedure
@@ -36,29 +40,38 @@ def main():
                             code, command_pattern, control_structure_pattern)
                         if has_block:
                             code = has_block
-                            print('Procedure: ', proc)
-                            print('Parameters: ', parameters)
-                            # print('Variables: ', variables)
-                            # print(code)
-                            print('\n')
+                            # print('Procedure: ', proc)
+                            # print('Parameters: ', parameters)
+                            # # print('Variables: ', variables)
+                            # # print(code)
+                            # print('\n')
                         else:
-                            print('No valid procedure ' + proc)
+                            # print('No valid procedure ' + proc)
+                            return False
             instructions_block = parsero.createBlockScope(
                 [], variables, procedures, n_parameters, [])
-            # print(code)
+            # # print(code)
             command_pattern, control_structure_pattern = instructions_block
 
             final = parsero.checkInstructionsBlock(code, command_pattern, control_structure_pattern)
 
 
             if final:
-                print("Valid program")
+                return True
+                # print("Valid program")
             else:
-                print("Invalid program")
+                return False
+                # print("Invalid program")
 
     else:
-        print("No program")
+        return False
+        # print("No program")
 
 
 if __name__ == '__main__':
-    main()
+    tests_dir = 'tests/'
+    filename = tests_dir + input("Enter the name of the file (must be in the folder tests/) to eval: ")
+    if main(filename):
+        print("Yes, the input file is a valid program.")
+    else:
+        print("No, the input file is not a valid program.")

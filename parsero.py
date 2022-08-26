@@ -217,11 +217,12 @@ def checkNonTerminalBlock(code, command_pattern, control_structure_pattern):
             if not command:
                 control_structure = re.match(rf'{control_structure_pattern}$', ins)
                 if not control_structure:
-                    print('Error: invalid instruction ' + ins)
+                    # print('Error: invalid instruction ' + ins)
                     return False
-                print('control structure ' + ins)
+                # print('control structure ' + ins)
             else:
-                print('command ' + ins)
+                pass
+                # print('command ' + ins)
 
         end_pattern = r'^[\s\n]*\][\s\n]*CORP'
         end = re.match(end_pattern, code[e:])
@@ -239,7 +240,7 @@ def checkInstructionsBlock(code, command_pattern, control_structure_pattern):
         s = s.span()[1]
         e = e.span()[0]
         code = code[s:e]
-        print(code)
+        # print(code)
 
         temp_block = re.sub(r'[\s\n]*', '', code)
         inicios = []
@@ -268,11 +269,12 @@ def checkInstructionsBlock(code, command_pattern, control_structure_pattern):
             if not command:
                 control_structure = re.match(rf'{control_structure_pattern}$', ins)
                 if not control_structure:
-                    print('Error: invalid instruction ' + ins)
+                    # print('Error: invalid instruction ' + ins)
                     return False
-                print('control structure ' + ins)
+                # print('control structure ' + ins)
             else:
-                print('command ' + ins)
+                pass
+                # print('command ' + ins)
 
 
         if len(code[e:]) <= 0:
