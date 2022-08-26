@@ -4,6 +4,8 @@ variables = []
 procedures = []
 
 def main():
+    """ Main function to execute the parser
+    """
     code = parser.readFile("tests/test.txt")
     code = parser.checkProgram(code)
     if code:
@@ -28,8 +30,10 @@ def main():
                 if has_procedure:
                     code, proc, parameters = has_procedure
                     if proc == proc_act:
-                        command_pattern, control_structure_pattern = parser.createBlockScope(parameters, variables, procedures, n_parameters, proc)
-                        has_block = parser.checkNonTerminalBlock(code, command_pattern, control_structure_pattern)
+                        command_pattern, control_structure_pattern = parser.createBlockScope(
+                            parameters, variables, procedures, n_parameters, proc)
+                        has_block = parser.checkNonTerminalBlock(
+                            code, command_pattern, control_structure_pattern)
                         if has_block:
                             code = has_block
                             print('Procedure: ', proc)
@@ -39,7 +43,8 @@ def main():
                             print('\n')
                         else:
                             print('No valid procedure ' + proc)
-            instructions_block = parser.createBlockScope([], variables, procedures, n_parameters, [])
+            instructions_block = parser.createBlockScope(
+                [], variables, procedures, n_parameters, [])
             # print(code)
             command_pattern, control_structure_pattern = instructions_block
 

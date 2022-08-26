@@ -1,3 +1,7 @@
+"""
+All the logic y regular expressions behind the parser
+"""
+
 import re
 
 
@@ -174,12 +178,12 @@ def checkProcedure(code):
     return False
 
 def checkNonTerminalBlock(code, command_pattern, control_structure_pattern):
-    non_terminal_block_pattern = rf'^\[[\s\n]*'
+    non_terminal_block_pattern = r'^\[[\s\n]*'
     non_terminal_block = re.match(non_terminal_block_pattern, code)
     if non_terminal_block:
         s = non_terminal_block.span()[1]
         code = code[s:]
-        end = re.search(rf'\][\s\n]*CORP', code)
+        end = re.search(r'\][\s\n]*CORP', code)
         if end:
             e = end.span()[0]
         else:
@@ -219,7 +223,7 @@ def checkNonTerminalBlock(code, command_pattern, control_structure_pattern):
             else:
                 print('command ' + ins)
 
-        end_pattern = rf'^[\s\n]*\][\s\n]*CORP'
+        end_pattern = r'^[\s\n]*\][\s\n]*CORP'
         end = re.match(end_pattern, code[e:])
         if end:
             return code[e+end.span()[1]:]
@@ -274,5 +278,3 @@ def checkInstructionsBlock(code, command_pattern, control_structure_pattern):
         if len(code[e:]) <= 0:
             return True
         return False
-
-
