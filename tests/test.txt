@@ -1,7 +1,12 @@
 
+
+
 PROG
+
+
 VAR n, x, y;
-PROC putCB (c, b)
+
+    PROC putCB (c, b)
 {
     drop(c);
     free (b);
@@ -23,14 +28,17 @@ look        (       north   )   ;
     walk(north, y);
 }
 CROP
-PROC goNorth ()
+PROC goNorth (a)
 {
 
     while (canWalk (north ,1)) do {walk(north ,1)} od
     if (isfacing(north)) {x:=2} fi
     if (isValid(walk, 20)) {x:=2} fi
     if (        isValid (       walk,   n   )     ) {x:=2} fi
-    if (        not         (        isValid (       walk,   n   )  )   ) {x:=2} fi
+    if (        not         (        isValid (       walk,   n   )  )   ) {
+        x:=2;
+        y:=3
+        } fi
     if (canWalk(right, 20)) {walk(12)} else {look(north)} fi
 
 }
@@ -47,6 +55,7 @@ PROC goWest ()
     repeatTimes a {grab(10)} per
 
 }
+
 CROP
 {
 go (3 ,3);

@@ -7,7 +7,6 @@ allow recursion.
 Spaces and tabulators are separators and should be ignored (outside of instructions)."""
 
 import re
-from signal import valid_signals
 
 name_pattern = r'\w+[\w\d]*'
 var_pattern = rf'^\s*VAR(\s*{name_pattern},)*\s*{name_pattern};$'
@@ -66,9 +65,9 @@ def parse(code):
 
         # checkIns(line)
 
-        if in_procedure:
-            checkCommand(line, parameters, variables)
-        checkCondition(line, parameters, variables)
+        # if in_procedure:
+        #     checkCommand(line, parameters, variables)
+        createBlockScope(line, parameters, variables)
 
 def declareVariables(line):
     # Revisa las declaraciones de variables
@@ -99,9 +98,6 @@ def checkProcedure(line):
             parameters = []
     return (bool(is_procedure), parameters)
 
-def checkIns(line):
-    pass
-
 def checkCommand(line, parameters, variables):
 
     posibles = variables.copy()
@@ -121,12 +117,7 @@ def checkCommand(line, parameters, variables):
     if is_match is not None:
         print(is_match.group(0))
 
-
-def checkIf(line, parameters, variables):
-    pass
-    # if_pattern = re.compile(rf'^\s*if\s*({condition})')
-
-def checkCondition(line, parameters, variables):
+def createBlockScope(line, parameters, variables):
 
     posibles = variables.copy()
     posibles.extend(parameters)
@@ -159,21 +150,27 @@ def checkCondition(line, parameters, variables):
 
     global_command_pattern = rf'({command_pattern}|{jumpTo_pattern}|{veer_pattern}|{look_pattern}|{walk_pattern}|{assign_pattern})'
 
+    terminal_block_pattern = rf'[\s\n]*((({global_command_pattern})([\s\n]*;[\s\n]*))*{global_command_pattern})?[\s\n]*'
 
-    if_pattern = rf'^\s*if\s*\(({global_condition_pattern})\)\s*\[\s*{global_command_pattern}\s*\]\s*(else\s*\[{global_command_pattern}\])?\s*fi\s*'
+    if_pattern = rf'^\s*if\s*\(({global_condition_pattern})\)\s*\[\s*{terminal_block_pattern}\s*\]\s*(else\s*\[{terminal_block_pattern}\])?\s*fi\s*'
 
-    while_pattern = rf'^\s*while\s*\(({global_condition_pattern})\)\s*do\s*\[\s*{global_command_pattern}\s*\]\s*od\s*'
+    while_pattern = rf'^\s*while\s*\(({global_condition_pattern})\)\s*do\s*\[\s*{terminal_block_pattern}\s*\]\s*od\s*'
 
-    repeat_pattern = rf'^\s*repeatTimes\s*(({posibles_parameters})|\d+)\s*\[\s*{global_command_pattern}\s*\]\s*per\s*'
+    repeat_pattern = rf'^\s*repeatTimes\s*(({posibles_parameters})|\d+)\s*\[\s*{terminal_block_pattern}\s*\]\s*per\s*'
 
-    is_match = re.match(if_pattern, line)
+    control_structure_pattern = rf'({if_pattern}|{while_pattern}|{repeat_pattern})'
+
+    non_terminal_block_pattern = rf'[\s\n]*((({global_command_pattern}|{control_structure_pattern})([\s\n]*;[\s\n]*))*({global_command_pattern}|{control_structure_pattern}))?[\s\n]*'
+
+
+    is_match = re.match(control_structure_pattern, line)
     if is_match is not None:
         print(is_match.group(0))
 
     is_while = re.match(while_pattern, line)
     if is_while is not None:
         print(is_while.group(0))
-    
+
     is_repeat = re.match(repeat_pattern, line)
     if is_repeat is not None:
         print(is_repeat.group(0))
