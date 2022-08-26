@@ -22,7 +22,8 @@ end_prog = r'GORP[\s\n]*$'
 name_pattern = r'\w+[\w\d]*'
 var_pattern = rf'^[\s\n]*VAR([\s\n]*{name_pattern},)*[\s\n]*{name_pattern};'
 
-proc_pattern = rf'[\s\n]*PROC[\s\n]*{name_pattern}[\s\n]*\([\s\n]*(({name_pattern},)*[\s\n]*{name_pattern}\))|[\s\n]*\)'
+proc_pattern = rf'[\s\n]*PROC[\s\n]*({name_pattern})[\s\n]*\('
+# proc_pattern = rf'[\s\n]*PROC[\s\n]*(\w+[\w\d]*)[\s\n]*\((2(3[\s\n]*(1[\w\d]*,[\s\n]*1)*(\w+[\w\d]*)3)?[\s\n]*\)2)'
 
 def readFile(fileName):
     file = open(fileName, 'r')

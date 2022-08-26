@@ -28,7 +28,7 @@ look        (       north   )   ;
     walk(north, y);
 }
 CROP
-PROC goNorth (a)
+PROC goNorth ()
 {
 
     while (canWalk (north ,1)) do {walk(north ,1)} od
