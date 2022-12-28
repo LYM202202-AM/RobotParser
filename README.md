@@ -1,18 +1,27 @@
-# PROYECTO-0
-Abel Arismendy a.arismendy@uniandes.edu.co 202020625
+# Robot Parser
+Welcome to the Robot Parser repository! This Python program is designed to parse a text file containing a program for a robot, and verify that the syntax is correct.
 
-Manuela Pacheco m.pachecom2@uniandes.edu.co 202112410
+## Features
+- Reads a text file containing a program for the robot
+- Verifies that function names and variable names have been previously defined or, in the case of functions, that they are the function's arguments
+- Allows recursion
+- Ignores spaces and tabulators (except within instructions)
 
-Python program with a simple yes/no parser.
-The program read a text file that contains a program for the robot, and
-verify whether the syntax is correct.
+## How to Use
 
-The program must verify that used function names and variable names have been previously
-defined or in the case of functions, that they are the function's arguments. The program
-allows recursion.
-Spaces and tabulators are separators and should be ignored (outside of instructions).
+To use the Robot Parser, follow these steps:
 
-## TESTS
+- Clone this repository to your local machine using git clone https://github.com/LYM202202/robot-parser.git
+- Navigate to the repository directory using cd robot-parser
+- Run the parser by executing python main.py
+- The program will prompt you to enter the name of a file located in the tests directory. You can enter the name of one of the test files provided (e.g. test.txt), or the name of a file you have created yourself.
+
+## Authors
+
+- Abel Arismendy (a.arismendy@uniandes.edu.co)
+- Manuela Pacheco (m.pachecom2@uniandes.edu.co)
+
+## Tests
 
 The folder [tests](/tests/) contains 3 files:
 
