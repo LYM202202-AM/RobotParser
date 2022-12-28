@@ -11,9 +11,9 @@ Welcome to the Robot Parser repository! This Python program is designed to parse
 
 To use the Robot Parser, follow these steps:
 
-- Clone this repository to your local machine using git clone https://github.com/LYM202202/robot-parser.git
-- Navigate to the repository directory using cd robot-parser
-- Run the parser by executing python main.py
+- Clone this repository to your local machine using `git clone https://github.com/LYM202202/robot-parser.git`
+- Navigate to the repository directory using `cd robot-parser`
+- Run the parser by executing `python main.py`
 - The program will prompt you to enter the name of a file located in the tests directory. You can enter the name of one of the test files provided (e.g. test.txt), or the name of a file you have created yourself.
 
 ## Authors
